@@ -25,4 +25,7 @@ def coin_toss_game():
             print("Invalid choice. Please choose 'heads' or 'tails'.")
             continue
 
+python coin_toss_game.py
+
+
     
