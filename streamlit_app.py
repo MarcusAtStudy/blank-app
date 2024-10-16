@@ -1,57 +1,40 @@
+pip install streamlit
+
+import streamlit as st
 import random
 
-def coin_toss_game():
-    balance = 100  # Starting balance
-    print("Welcome to the Coin Toss Game!")
-    
-    while True:
-        print(f"Your current balance is: ${balance:.2f}")
-        
-        # Get user's bet and choice
-        bet = input("Enter your bet amount (or type 'q' to quit): ")
-        if bet.lower() == 'q':
-            print("Thanks for playing! Goodbye.")
-            break
+# Initialize session state
+if 'balance' not in st.session_state:
+    st.session_state.balance = 100  # Starting balance
 
-        try:
-            bet = float(bet)
-            if bet > balance:
-                print("You cannot bet more than your current balance.")
-                continue
-            if bet <= 0:
-                print("Please enter a positive amount.")
-                continue
-        except ValueError:
-            print("Invalid input. Please enter a valid number.")
-            continue
+st.title("Coin Toss Gambling Game")
+st.write(f"Your current balance is: ${st.session_state.balance:.2f}")
 
-        choice = input("Choose heads or tails: ").lower()
-        if choice not in ['heads', 'tails']:
-            print("Invalid choice. Please choose 'heads' or 'tails'.")
-            continue
+# User input for bet
+bet = st.number_input("Enter your bet amount (max $100):", min_value=0.0, max_value=st.session_state.balance, step=1.0)
 
+# User choice
+choice = st.selectbox("Choose heads or tails:", ["heads", "tails"])
+
+if st.button("Toss Coin"):
+    if bet > 0:
         # Coin toss logic
         outcome = random.choice(['heads', 'tails'])
-        print(f"The coin shows: {outcome}")
+        st.write(f"The coin shows: {outcome}")
 
         # Determine win/loss
         if choice == outcome:
-            balance += bet
-            print(f"You win! Your new balance is: ${balance:.2f}")
+            st.session_state.balance += bet
+            st.success(f"You win! Your new balance is: ${st.session_state.balance:.2f}")
         else:
-            balance -= bet
-            print(f"You lose! Your new balance is: ${balance:.2f}")
+            st.session_state.balance -= bet
+            st.error(f"You lose! Your new balance is: ${st.session_state.balance:.2f}")
+    else:
+        st.warning("Please enter a valid bet amount.")
 
-        # Check if player wants to continue
-        if balance <= 0:
-            print("You have run out of money! Game over.")
-            break
+# Check if the balance is zero
+if st.session_state.balance <= 0:
+    st.error("You have run out of money! Game over.")
+    st.session_state.balance = 100  # Reset the balance
 
-        play_again = input("Do you want to play again? (y/n): ").lower()
-        if play_again != 'y':
-            print("Thanks for playing! Goodbye.")
-            break
-
-coin_toss_game()
-
-    
+streamlit run app.py
