@@ -1,5 +1,3 @@
-pip install streamlit
-
 import streamlit as st
 import random
 
@@ -37,4 +35,4 @@ if st.session_state.balance <= 0:
     st.error("You have run out of money! Game over.")
     st.session_state.balance = 100  # Reset the balance
 
-streamlit run app.py
+
