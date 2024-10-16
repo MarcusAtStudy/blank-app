@@ -4,26 +4,34 @@ import random
 # Initialize session state
 if 'balance' not in st.session_state:
     st.session_state.balance = 100  # Starting balance
+if 'jackpot' not in st.session_state:
+    st.session_state.jackpot = 1000  # Jackpot amount
 
-st.title("Coin Toss Gambling Game")
+# Define the symbols for the slot machine
+symbols = ["🍒", "🍋", "🍊", "🍉", "🍇", "⭐", "💰"]
+
+# Function to spin the slot machine
+def spin_slots():
+    return random.choices(symbols, k=3)
+
+# Streamlit app layout
+st.title("Slot Machine Game")
 st.write(f"Your current balance is: ${st.session_state.balance:.2f}")
 
 # User input for bet
 bet = st.number_input("Enter your bet amount (max $100):", min_value=0.0, max_value=st.session_state.balance, step=1.0)
 
-# User choice
-choice = st.selectbox("Choose heads or tails:", ["heads", "tails"])
-
-if st.button("Toss Coin"):
+if st.button("Spin!"):
     if bet > 0:
-        # Coin toss logic
-        outcome = random.choice(['heads', 'tails'])
-        st.write(f"The coin shows: {outcome}")
+        # Spin the slot machine
+        result = spin_slots()
+        st.write(f"🎰 Slots: {result[0]} | {result[1]} | {result[2]} 🎰")
 
-        # Determine win/loss
-        if choice == outcome:
-            st.session_state.balance += bet
-            st.success(f"You win! Your new balance is: ${st.session_state.balance:.2f}")
+        # Check for win
+        if result[0] == result[1] == result[2]:  # All three symbols match
+            winnings = bet * 10  # Example winnings multiplier
+            st.session_state.balance += winnings
+            st.success(f"You win! You received ${winnings:.2f}. Your new balance is: ${st.session_state.balance:.2f}")
         else:
             st.session_state.balance -= bet
             st.error(f"You lose! Your new balance is: ${st.session_state.balance:.2f}")
